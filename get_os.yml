@@ -1,0 +1,9 @@
+---
+- hosts: proxmox
+  tasks:
+    - name: uname of the version of OS
+      shell: uname -a 
+      register: hello
+
+    - debug: msg="{{ hello.stdout }}"
+  
