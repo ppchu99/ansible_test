@@ -1,12 +1,11 @@
 ---
 - hosts: localhost
-  connections: local
+  connection: local
   become: true
-
   tasks:
-  - name: install various packages
-    package:
-      name:
-        - htop
-        - tmux 
-        - vim-nox
+    - name: install various packages
+      package:
+        name:
+          - htop
+          - tmux 
+          - vim-nox
