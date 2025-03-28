@@ -1,0 +1,8 @@
+---
+- hosts: proxmox
+  tasks:
+    - name: Run lsl.sh and output "ls /root"
+      script: lsl.sh
+      register: out
+
+    - debug: var=out.stdout_lines  
