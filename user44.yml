@@ -1,0 +1,35 @@
+- name: 'Create and Manage Users'
+  hosts: all 
+  become: true
+  gather_facts: false
+  tasks:
+    - name: 'Create User Account'
+      user:
+        name: "{{ user_account | default('ansible') }}"
+        state: 'present'
+        shell: '/bin/bash'
+        password: "{{ 'xxxxxxx' | password_hash('sha512') }}"
+        update_password: 'on_create'
+        generate_ssh_key: true
+        ssh_key_type: 'rsa'
+        ssh_key_bits: 2048
+        ssh_key_file: '.ssh/id_rsa'
+      when: user_create == 'yes'  
+    - name: 'Allow SSH Authentication via key from current pchu  account to new remote account'
+      authorized_key:
+        user: "{{ user_account | default('ansible') }}"
+        state: 'present'
+        manage_dir: true
+        key: "{{ lookup('file', '/home/pchu/.ssh/id_rsa.pub') }}"
+      when: user_create == 'yes'  
+    - name: 'Copy Sudoers file'
+      copy:
+        dest: '/etc/sudoers.d/{{ user_account }}'
+        content: '{{ user_account}} ALL=(root) NOPASSWD: ALL'
+      when: user_create == 'yes'
+    - name: 'Delete User Account'
+      user:
+        name: "{{ user_account | default('ansible') }}"
+        state: 'absent'
+        remove: true
+      when: user_create == 'no'
